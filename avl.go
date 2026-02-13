@@ -12,48 +12,37 @@ type Comparable interface {
 //
 // K is a comparable used to order nodes.
 // V is the type value stored in the node.
-type Node[K Comparable, V any] struct {
-	Key    K
+type Node[V Comparable] struct {
 	Value  V
 	heigth uint
-	left   *Node[K, V]
-	right  *Node[K, V]
+	left   *Node[V]
+	right  *Node[V]
 }
 
 // AVL is a standard AVL tree containing Node.
-type AVL[K Comparable, V any] struct {
-	root *Node[K, V]
+type AVL[V Comparable] struct {
+	root *Node[V]
 }
 
 // NewAVL creates a new AVL.
-func NewAVL[K Comparable, V any]() *AVL[K, V] {
-	return &AVL[K, V]{}
-}
-
-// NewAVL creates a new AVL with comparable value.
-func NewAVLComp[V Comparable]() *AVL[V, V] {
-	return &AVL[V, V]{}
+func NewAVL[V Comparable]() *AVL[V] {
+	return &AVL[V]{}
 }
 
 // NewNode creates a new Node.
-func NewNode[K Comparable, V any]() *Node[K, V] {
-	return &Node[K, V]{}
-}
-
-// NewNode creates a new Node with comparable value.
-func NewNodeComp[V Comparable]() *Node[V, V] {
-	return &Node[V, V]{}
+func NewNode[V Comparable]() *Node[V] {
+	return &Node[V]{}
 }
 
 // Get returns the value associated with the key provided.
 //
 // If key is not found, it returns the default value of V.
 // In this case, it returns nil if V is a pointer.
-func (a *AVL[K, V]) Get(key K) V {
+func (a *AVL[V]) Get(key Comparable) V {
 	var v V
 	node := a.root
 	for node != nil {
-		res := node.Key.Compare(key)
+		res := node.Value.Compare(key)
 		if res == 0 {
 			return node.Value
 		} else if res > 0 {
@@ -66,7 +55,7 @@ func (a *AVL[K, V]) Get(key K) V {
 }
 
 // Min returns the min contained in AVL.
-func (a *AVL[K, V]) Min() V {
+func (a *AVL[V]) Min() V {
 	node := a.root
 	for node.left != nil {
 		node = node.left
@@ -75,7 +64,7 @@ func (a *AVL[K, V]) Min() V {
 }
 
 // Max returns the max contained in AVL.
-func (a *AVL[K, V]) Max() V {
+func (a *AVL[V]) Max() V {
 	node := a.root
 	for node.right != nil {
 		node = node.right
@@ -84,7 +73,7 @@ func (a *AVL[K, V]) Max() V {
 }
 
 // Insert nodes in the AVL.
-func (a *AVL[K, V]) Insert(nodes ...*Node[K, V]) *AVL[K, V] {
+func (a *AVL[V]) Insert(nodes ...*Node[V]) *AVL[V] {
 	for _, node := range nodes {
 		if a.root == nil {
 			a.root = node
@@ -96,7 +85,7 @@ func (a *AVL[K, V]) Insert(nodes ...*Node[K, V]) *AVL[K, V] {
 }
 
 // Delete nodes in the AVL.
-func (a *AVL[K, V]) Delete(nodes ...*Node[K, V]) *AVL[K, V] {
+func (a *AVL[V]) Delete(nodes ...*Node[V]) *AVL[V] {
 	for _, node := range nodes {
 		if a.root != nil {
 			a.root = a.root.delete(node.Key)
@@ -105,7 +94,7 @@ func (a *AVL[K, V]) Delete(nodes ...*Node[K, V]) *AVL[K, V] {
 	return a
 }
 
-func (n *Node[K, V]) updateHeight() {
+func (n *Node[V]) updateHeight() {
 	left := uint(0)
 	if n.left != nil {
 		left = n.left.heigth
@@ -117,21 +106,21 @@ func (n *Node[K, V]) updateHeight() {
 	n.heigth = 1 + max(left, right)
 }
 
-func (n *Node[K, V]) rotateLeft() *Node[K, V] {
+func (n *Node[V]) rotateLeft() *Node[V] {
 	newNode := n.left
 	n.left = newNode.right
 	newNode.right = n
 	return newNode
 }
 
-func (n *Node[K, V]) rotateRight() *Node[K, V] {
+func (n *Node[V]) rotateRight() *Node[V] {
 	newNode := n.right
 	n.right = newNode.left
 	newNode.left = n
 	return newNode
 }
 
-func (n *Node[K, V]) rotate() *Node[K, V] {
+func (n *Node[V]) rotate() *Node[V] {
 	left := 0
 	if n.left != nil {
 		left = int(n.left.heigth)
@@ -144,13 +133,13 @@ func (n *Node[K, V]) rotate() *Node[K, V] {
 	switch comp {
 	case 2:
 		l := n.left
-		if l.Key.Compare(n.Key) < 0 {
+		if l.Value.Compare(n.Value) < 0 {
 			n.left = l.rotateLeft()
 		}
 		return n.rotateRight()
 	case -2:
 		r := n.right
-		if r.Key.Compare(n.Key) < 0 {
+		if r.Value.Compare(n.Value) < 0 {
 			n.left = r.rotateRight()
 		}
 		return n.rotateLeft()
@@ -159,8 +148,8 @@ func (n *Node[K, V]) rotate() *Node[K, V] {
 	}
 }
 
-func (n *Node[K, V]) insert(node *Node[K, V]) *Node[K, V] {
-	comp := n.Key.Compare(node.Key)
+func (n *Node[V]) insert(node *Node[V]) *Node[V] {
+	comp := n.Value.Compare(node.Value)
 	if comp == 0 {
 		n.Value = node.Value
 		return n
@@ -181,8 +170,8 @@ func (n *Node[K, V]) insert(node *Node[K, V]) *Node[K, V] {
 	return n.rotate()
 }
 
-func (n *Node[K, V]) delete(key Comparable) *Node[K, V] {
-	comp := n.Key.Compare(key)
+func (n *Node[V]) delete(key Comparable) *Node[V] {
+	comp := n.Value.Compare(key)
 	res := n
 	if comp == 0 {
 		if n.right == nil {
