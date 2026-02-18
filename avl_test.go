@@ -168,3 +168,16 @@ func TestAVL_Max(t *testing.T) {
 		a.Delete(i)
 	}
 }
+
+func TestAVL_Sort(t *testing.T) {
+	a := NewInt()
+	for i := range 10 {
+		a.Insert(i)
+	}
+	st := a.Sort()
+	for i := range 10 {
+		if st[i] != i {
+			t.Errorf("invalid value: got %d, wanted %d", st[i], i)
+		}
+	}
+}

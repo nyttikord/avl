@@ -112,3 +112,14 @@ func (a *AVL[T]) Delete(vals ...T) *AVL[T] {
 	}
 	return a
 }
+
+func (a *AVL[T]) Sort() []T {
+	return sort(a.root)
+}
+
+func sort[T any](n *Node[T]) (v []T) {
+	if n == nil {
+		return
+	}
+	return append(append(sort(n.left), n.Value), sort(n.right)...)
+}
