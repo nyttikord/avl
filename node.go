@@ -107,7 +107,6 @@ func (n *Node[T]) delete(key T, cmp Compare[T]) *Node[T] {
 	comp := cmp(n.Value, key)
 	res := n
 	if comp == 0 {
-		println("found :D", n.Value)
 		if n.right == nil {
 			res = n.left
 		} else if n.left == nil {
