@@ -1,37 +1,29 @@
 package avl
 
-import "fmt"
-
 // Compare is a function that compares two values.
 // Returns 0 if a = b, > 0 if a > b and < 0 if a < b.
 type Compare[T any] func(a, b T) int
-
-// Node is contained in an AVL.
-//
-// T should be a pointer to return nil if the value is not found.
-type Node[T any] struct {
-	Value  T
-	heigth uint
-	left   *Node[T]
-	right  *Node[T]
-}
 
 // AVL is a standard AVL tree containing Node.
 type AVL[T any] struct {
 	root    *Node[T]
 	compare Compare[T]
+	clone   func(T) T
+}
+
+// NewAVLClone creates a new AVL that clone inserted data to avoid side effects.
+func NewAVLClone[T any](cmp Compare[T], clone func(T) T) *AVL[T] {
+	return &AVL[T]{compare: cmp, clone: clone}
 }
 
 // NewAVL creates a new AVL.
 func NewAVL[T any](cmp Compare[T]) *AVL[T] {
-	return &AVL[T]{compare: cmp}
+	return NewAVLClone(cmp, func(t T) T { return t })
 }
 
 // NewAVLInt creates a new AVL storing int.
 func NewAVLInt() *AVL[int] {
-	return &AVL[int]{
-		compare: func(a, b int) int { return a - b },
-	}
+	return NewAVL(func(a, b int) int { return a - b })
 }
 
 // newNode creates a new Node.
@@ -55,48 +47,53 @@ func (a *AVL[T]) String() string {
 //	a.Get(func(v int) { return a - 5 })
 //
 // If key is not found, it returns nil.
-func (a *AVL[T]) Get(cmp func(v T) int) (v *T) {
+func (a *AVL[T]) Get(cmp func(v T) int) *T {
 	node := a.root
 	for node != nil {
-		res := cmp(node.Value)
+		t := a.clone(node.Value)
+		res := cmp(t)
 		if res == 0 {
-			return &node.Value
+			tv := a.clone(node.Value)
+			return &tv
 		} else if res < 0 {
 			node = node.right
 		} else {
 			node = node.left
 		}
 	}
-	return
+	return nil
 }
 
 // Min returns the min contained in AVL.
-func (a *AVL[T]) Min() (v *T) {
+func (a *AVL[T]) Min() *T {
 	node := a.root
 	if node == nil {
-		return
+		return nil
 	}
 	for node.left != nil {
 		node = node.left
 	}
-	return &node.Value
+	tv := a.clone(node.Value)
+	return &tv
 }
 
 // Max returns the max contained in AVL.
-func (a *AVL[T]) Max() (v *T) {
+func (a *AVL[T]) Max() *T {
 	node := a.root
 	if node == nil {
-		return
+		return nil
 	}
 	for node.right != nil {
 		node = node.right
 	}
-	return &node.Value
+	tv := a.clone(node.Value)
+	return &tv
 }
 
 // Insert nodes in the AVL.
 func (a *AVL[T]) Insert(vals ...T) *AVL[T] {
 	for _, v := range vals {
+		v = a.clone(v)
 		if a.root == nil {
 			a.root = newNode(v)
 		} else {
@@ -114,129 +111,4 @@ func (a *AVL[T]) Delete(vals ...T) *AVL[T] {
 		}
 	}
 	return a
-}
-
-func (n *Node[T]) String() string {
-	left := `""`
-	if n.left != nil {
-		left = n.left.String()
-	}
-	right := `""`
-	if n.right != nil {
-		right = n.right.String()
-	}
-	if n.right == n.left {
-		return fmt.Sprintf("%v", n.Value)
-	}
-	return fmt.Sprintf("{%d}%v: [%s, %s]", n.heigth, n.Value, left, right)
-}
-
-func (n *Node[T]) updateHeight() {
-	left := uint(0)
-	if n.left != nil {
-		left = n.left.heigth
-	}
-	right := uint(0)
-	if n.right != nil {
-		right = n.right.heigth
-	}
-	n.heigth = 1 + max(left, right)
-}
-
-func (n *Node[T]) rotateLeft() *Node[T] {
-	next := n.right
-	n.right = next.left
-	next.left = n
-	n.updateHeight()
-	next.updateHeight()
-	return next
-}
-
-func (n *Node[T]) rotateRight() *Node[T] {
-	next := n.left
-	n.left = next.right
-	next.right = n
-	n.updateHeight()
-	next.updateHeight()
-	return next
-}
-
-func (n *Node[T]) rotate(cmp Compare[T]) *Node[T] {
-	left := 0
-	if n.left != nil {
-		left = int(n.left.heigth)
-	}
-	right := 0
-	if n.right != nil {
-		right = int(n.right.heigth)
-	}
-	switch left - right {
-	case 2:
-		l := n.left
-		if cmp(l.Value, n.Value) > 0 {
-			n.left = l.rotateLeft()
-		}
-		return n.rotateRight()
-	case -2:
-		r := n.right
-		if cmp(r.Value, n.Value) < 0 {
-			n.right = r.rotateRight()
-		}
-		return n.rotateLeft()
-	default:
-		return n
-	}
-}
-
-func (n *Node[T]) insert(v T, cmp Compare[T]) *Node[T] {
-	comp := cmp(n.Value, v)
-	var next **Node[T]
-	if comp == 0 {
-		n.Value = v
-		return n
-	} else if comp > 0 {
-		next = &n.left
-	} else {
-		next = &n.right
-	}
-	if *next == nil {
-		*next = newNode(v)
-	}
-	*next = (*next).insert(v, cmp)
-	n.updateHeight()
-	return n.rotate(cmp)
-}
-
-func (n *Node[T]) delete(key T, cmp Compare[T]) *Node[T] {
-	comp := cmp(n.Value, key)
-	res := n
-	if comp == 0 {
-		println("found :D", n.Value)
-		if n.right == nil {
-			res = n.left
-		} else if n.left == nil {
-			res = n.right
-		} else {
-			cur := n
-			for cur.left != nil {
-				cur = cur.left
-			}
-			res = cur
-		}
-	} else if comp < 0 {
-		if n.right == nil {
-			return nil
-		}
-		n.right = n.right.delete(key, cmp)
-	} else {
-		if n.left == nil {
-			return nil
-		}
-		n.left = n.left.delete(key, cmp)
-	}
-	if res != nil {
-		res.updateHeight()
-		return res.rotate(cmp)
-	}
-	return res
 }
