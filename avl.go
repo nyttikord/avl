@@ -11,19 +11,19 @@ type AVL[T any] struct {
 	clone   func(T) T
 }
 
-// NewAVLClone creates a new AVL that clone inserted data to avoid side effects.
-func NewAVLClone[T any](cmp Compare[T], clone func(T) T) *AVL[T] {
+// NewClone creates a new AVL that clone inserted data to avoid side effects.
+func NewClone[T any](cmp Compare[T], clone func(T) T) *AVL[T] {
 	return &AVL[T]{compare: cmp, clone: clone}
 }
 
-// NewAVL creates a new AVL.
-func NewAVL[T any](cmp Compare[T]) *AVL[T] {
-	return NewAVLClone(cmp, func(t T) T { return t })
+// New creates a new AVL.
+func New[T any](cmp Compare[T]) *AVL[T] {
+	return NewClone(cmp, func(t T) T { return t })
 }
 
-// NewAVLInt creates a new AVL storing int.
-func NewAVLInt() *AVL[int] {
-	return NewAVL(func(a, b int) int { return a - b })
+// NewInt creates a new AVL storing int.
+func NewInt() *AVL[int] {
+	return New(func(a, b int) int { return a - b })
 }
 
 // newNode creates a new Node.

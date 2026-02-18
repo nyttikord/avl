@@ -74,7 +74,7 @@ func TestNode_Rotate(t *testing.T) {
 }
 
 func TestAVL_Insert(t *testing.T) {
-	a := NewAVLInt()
+	a := NewInt()
 	a.Insert(10)
 	if a.root.heigth != 1 {
 		t.Errorf("invalid heigth: got %d, wanted %d", a.root.heigth, 1)
@@ -90,18 +90,18 @@ func TestAVL_Insert(t *testing.T) {
 		t.Errorf("invalid heigth: got %d, wanted %d", a.root.heigth, 3)
 		t.Logf("avl: %s", a)
 	}
-	a = NewAVLInt()
+	a = NewInt()
 	for i := range 10 {
 		a.Insert(i)
 	}
-	a = NewAVLInt()
+	a = NewInt()
 	for i := range 10 {
 		a.Insert(9 - i)
 	}
 }
 
 func TestAVL_Get(t *testing.T) {
-	a := NewAVLInt()
+	a := NewInt()
 	for i := range 10 {
 		a.Insert(i)
 	}
@@ -117,7 +117,7 @@ func TestAVL_Get(t *testing.T) {
 }
 
 func TestAVL_Delete(t *testing.T) {
-	a := NewAVLInt()
+	a := NewInt()
 	for i := range 10 {
 		a.Insert(i)
 	}
@@ -132,7 +132,7 @@ func TestAVL_Delete(t *testing.T) {
 }
 
 func TestAVL_Min(t *testing.T) {
-	a := NewAVLInt()
+	a := NewInt()
 	for i := range 10 {
 		a.Insert(i)
 	}
@@ -151,7 +151,7 @@ func TestAVL_Min(t *testing.T) {
 }
 
 func TestAVL_Max(t *testing.T) {
-	a := NewAVLInt()
+	a := NewInt()
 	for i := range 10 {
 		a.Insert(i)
 	}
