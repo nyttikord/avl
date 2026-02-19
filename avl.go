@@ -1,3 +1,10 @@
+// Package avl contains the definition of the AVL tree.
+//
+// Use New to create a new AVL.
+//
+// If you want to store int, use NewInt.
+//
+// If you want your AVL to clone data before inserting it (to limit side effects), use NewClone.
 package avl
 
 // Compare is a function that compares two values.
@@ -138,4 +145,9 @@ func (a *AVL[T]) Clone() *AVL[T] {
 	tree.n = a.n
 	tree.root = a.root.Clone(tree.clone)
 	return tree
+}
+
+// Size the returns the number of nodes in the AVL.
+func (a *AVL[T]) Size() uint {
+	return a.n
 }
