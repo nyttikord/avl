@@ -131,3 +131,11 @@ func sort[T any](n *Node[T], arr []T, i uint) uint {
 	arr[i] = n.Value
 	return sort(n.right, arr, i+1)
 }
+
+// Clone the AVL.
+func (a *AVL[T]) Clone() *AVL[T] {
+	tree := NewClone(a.compare, a.clone)
+	tree.n = a.n
+	tree.root = a.root.Clone(tree.clone)
+	return tree
+}

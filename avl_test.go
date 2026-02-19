@@ -180,3 +180,18 @@ func TestAVL_Sort(t *testing.T) {
 		}
 	}
 }
+
+func TestAVL_Clone(t *testing.T) {
+	a := NewInt()
+	for i := range 10 {
+		a.Insert(i)
+	}
+	cl := a.Clone()
+	a.Insert(11)
+	got := cl.Get(func(v int) int { return v - 11 })
+	if got != nil {
+		t.Errorf("invalid value: got %d, wanted nothing", *got)
+		t.Logf("avl: %s", a)
+		t.Logf("clone: %s", a)
+	}
+}

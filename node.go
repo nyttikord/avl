@@ -135,3 +135,15 @@ func (n *Node[T]) delete(key T, cmp Compare[T]) *Node[T] {
 	}
 	return res
 }
+
+// Clone the Node.
+func (n *Node[T]) Clone(clone func(T) T) *Node[T] {
+	node := newNode(clone(n.Value))
+	if n.left != nil {
+		node.left = n.left.Clone(clone)
+	}
+	if n.right != nil {
+		node.right = n.right.Clone(clone)
+	}
+	return node
+}
