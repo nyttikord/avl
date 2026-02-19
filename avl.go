@@ -9,11 +9,12 @@ type AVL[T any] struct {
 	root    *Node[T]
 	compare Compare[T]
 	clone   func(T) T
+	n       uint
 }
 
 // NewClone creates a new AVL that clone inserted data to avoid side effects.
 func NewClone[T any](cmp Compare[T], clone func(T) T) *AVL[T] {
-	return &AVL[T]{compare: cmp, clone: clone}
+	return &AVL[T]{compare: cmp, clone: clone, n: 0}
 }
 
 // New creates a new AVL.
@@ -99,6 +100,7 @@ func (a *AVL[T]) Insert(vals ...T) *AVL[T] {
 		} else {
 			a.root = a.root.insert(v, a.compare)
 		}
+		a.n++
 	}
 	return a
 }
@@ -109,17 +111,23 @@ func (a *AVL[T]) Delete(vals ...T) *AVL[T] {
 		if a.root != nil {
 			a.root = a.root.delete(v, a.compare)
 		}
+		a.n--
 	}
 	return a
 }
 
+// Sort returns the sorted array of values contained in the AVL.
 func (a *AVL[T]) Sort() []T {
-	return sort(a.root)
+	arr := make([]T, a.n)
+	sort(a.root, arr, 0)
+	return arr
 }
 
-func sort[T any](n *Node[T]) (v []T) {
+func sort[T any](n *Node[T], arr []T, i uint) uint {
 	if n == nil {
-		return
+		return i
 	}
-	return append(append(sort(n.left), n.Value), sort(n.right)...)
+	i = sort(n.left, arr, i)
+	arr[i] = n.Value
+	return sort(n.right, arr, i+1)
 }

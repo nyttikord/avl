@@ -136,7 +136,6 @@ func TestAVL_Min(t *testing.T) {
 	for i := range 10 {
 		a.Insert(i)
 	}
-	println(a.String())
 	for i := range 10 {
 		got := a.Min()
 		if got == nil {
