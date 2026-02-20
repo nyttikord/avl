@@ -1,32 +1,68 @@
 // Package avl contains the definition of the AVL tree.
 //
 // Use New to create a new AVL.
+// The data is treated as immutable if the type implements Clonable.
 //
 // If you want to store int, use NewInt.
 //
-// If you want your AVL to clone data before inserting it (to limit side effects), use NewClone.
+// If you want your AVL to store immutable data that doesn't implement Clonable, use NewImmutable.
+//
+// If you want your AVL to store mutable data even if the type implements Clonable, use NewMutable.
 package avl
 
-// Compare is a function that compares two values.
+// CompareFunc is a function that compares two values.
 // Returns 0 if a = b, > 0 if a > b and < 0 if a < b.
-type Compare[T any] func(a, b T) int
+type CompareFunc[T any] func(T, T) int
+
+// CloneFunc is a function that clone the value.
+// It is used to avoid side effects.
+type CloneFunc[T any] func(T) T
+
+func defaultCloneFunc[T any](t T) T { return t }
 
 // AVL is a standard AVL tree containing Node.
 type AVL[T any] struct {
 	root    *Node[T]
-	compare Compare[T]
-	clone   func(T) T
+	compare CompareFunc[T]
+	clone   CloneFunc[T]
 	n       uint
 }
 
-// NewClone creates a new AVL that clone inserted data to avoid side effects.
-func NewClone[T any](cmp Compare[T], clone func(T) T) *AVL[T] {
+// Clonable represents a type that will be automatically cloned when used in an AVL.
+type Clonable[T any] interface {
+	Clone() T
+}
+
+func getClone[T any](v any) CloneFunc[T] {
+	if _, ok := v.(Clonable[T]); !ok {
+		return defaultCloneFunc
+	}
+	return func(t T) T {
+		var r any = t
+		return r.(Clonable[T]).Clone()
+	}
+}
+
+// NewImmutable creates a new AVL storing immutable data.
+//
+// clone is the function used to clone data to avoid side effects.
+func NewImmutable[T any](cmp CompareFunc[T], clone CloneFunc[T]) *AVL[T] {
 	return &AVL[T]{compare: cmp, clone: clone, n: 0}
 }
 
 // New creates a new AVL.
-func New[T any](cmp Compare[T]) *AVL[T] {
-	return NewClone(cmp, func(t T) T { return t })
+//
+// If T implements Clonable, the inserted data becomes immutable.
+// See NewMutable to avoid this behavior.
+// See NewImmutable to use immutable data for types that don't implements Clonable.
+func New[T any](cmp CompareFunc[T]) *AVL[T] {
+	var t T
+	return NewImmutable(cmp, getClone[T](t))
+}
+
+// NewMutable creates a new AVL storing mutable data.
+func NewMutable[T any](cmp CompareFunc[T]) *AVL[T] {
+	return NewImmutable(cmp, defaultCloneFunc)
 }
 
 // NewInt creates a new AVL storing int.
@@ -141,7 +177,7 @@ func sort[T any](n *Node[T], arr []T, i uint) uint {
 
 // Clone the AVL.
 func (a *AVL[T]) Clone() *AVL[T] {
-	tree := NewClone(a.compare, a.clone)
+	tree := NewImmutable(a.compare, a.clone)
 	tree.n = a.n
 	tree.root = a.root.Clone(tree.clone)
 	return tree

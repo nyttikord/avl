@@ -125,6 +125,36 @@ func TestAVL_Clone(t *testing.T) {
 	if got != nil {
 		t.Errorf("invalid value: got %d, wanted nothing", *got)
 		t.Logf("avl: %s", a)
-		t.Logf("clone: %s", a)
+		t.Logf("clone: %s", cl)
+	}
+}
+
+type cloneStruct []int
+
+func (c cloneStruct) Clone() cloneStruct {
+	dst := make([]int, len(c))
+	copy(dst, c)
+	return dst
+}
+
+func TestClonable_AutoClone(t *testing.T) {
+	a := New(func(a, b cloneStruct) int { return len(a) - len(b) })
+	cl := cloneStruct{1, 2, 3}
+	a.Insert(cl)
+	got := a.Get(func(v cloneStruct) int { return 3 - len(v) })
+	if got == nil {
+		t.Errorf("invalid value: got nil")
+		t.Logf("avl: %s", a)
+		return
+	}
+	for i := range *got {
+		(*got)[i] = (i + 1) << 3
+	}
+	ng := a.Get(func(v cloneStruct) int { return 3 - len(v) })
+	for i, r := range *ng {
+		if i+1 != r {
+			t.Errorf("invalid value: got %d, wanted %d", r, i+1)
+			t.Logf("avl: %s", a)
+		}
 	}
 }

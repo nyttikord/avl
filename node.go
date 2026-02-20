@@ -57,7 +57,7 @@ func (n *Node[T]) rotateRight() *Node[T] {
 	return next
 }
 
-func (n *Node[T]) rotate(cmp Compare[T]) *Node[T] {
+func (n *Node[T]) rotate(cmp CompareFunc[T]) *Node[T] {
 	left := 0
 	if n.left != nil {
 		left = int(n.left.heigth)
@@ -84,7 +84,7 @@ func (n *Node[T]) rotate(cmp Compare[T]) *Node[T] {
 	}
 }
 
-func (n *Node[T]) insert(v T, cmp Compare[T]) *Node[T] {
+func (n *Node[T]) insert(v T, cmp CompareFunc[T]) *Node[T] {
 	comp := cmp(n.Value, v)
 	var next **Node[T]
 	if comp == 0 {
@@ -103,7 +103,7 @@ func (n *Node[T]) insert(v T, cmp Compare[T]) *Node[T] {
 	return n.rotate(cmp)
 }
 
-func (n *Node[T]) delete(key T, cmp Compare[T]) *Node[T] {
+func (n *Node[T]) delete(key T, cmp CompareFunc[T]) *Node[T] {
 	comp := cmp(n.Value, key)
 	res := n
 	if comp == 0 {
