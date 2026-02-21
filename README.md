@@ -12,7 +12,7 @@ go get -u github.com/nyttikord/avl@latest
 You can create use simple AVL tree storing int with:
 ```go
 // create a new AVL storing int using the standard cmp.Compare.
-tree := avl.NewOrdered[int]()
+tree := avl.NewSimple[int]()
 
 // insert new nodes
 tree.Insert(1, 2, 3, 8, 7, 5)
@@ -172,3 +172,5 @@ if got == nil {
     println(*got)
 }
 ```
+
+Functions `NewKeyImmutable`, `NewKeyMutable`, `NewKeySimpleImmutable` and `NewKeySimpleMutable` are available too.
