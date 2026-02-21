@@ -114,11 +114,20 @@ tree := avl.NewMutable(header)
 You can use helping functions to avoid writing common comparison function.
 ```go
 // create a new AVL using the standard cmp.Compare function.
-tree := avl.NewOrdered[int]()
+tree := avl.NewSimple[int]()
 
 // Create a new AVL storing strings using the standard strings.Compare function.
 // This function is faster than avl.NewOrdered (because strings.Compare is faster than cmp.Compare).
 tree = avl.NewString()
 ```
 
-`avl.NewOrderedImmutable` and `avl.NewOrderedMutable` are available.
+`avl.NewSimpleImmutable` and `avl.NewSimpleMutable` are available.
+
+These functions return a `*SimpleAVL[T]` that has the method `Has(T) bool` checking if the value is present in the AVL.
+```go
+tree := avl.NewSimple[int]()
+tree.Insert(1, 2, 3)
+if !tree.Has(1) {
+    panic("tree does not have 1")
+}
+```
