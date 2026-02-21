@@ -2,7 +2,7 @@ package avl
 
 import "fmt"
 
-// Node is contained in an AVL.
+// Node is contained in an [AVL].
 //
 // T should be a pointer to return nil if the value is not found.
 type Node[T any] struct {
@@ -136,7 +136,7 @@ func (n *Node[T]) delete(key T, cmp CompareFunc[T]) *Node[T] {
 	return res
 }
 
-// Clone the Node.
+// Clone the [Node].
 func (n *Node[T]) Clone(clone func(T) T) *Node[T] {
 	node := newNode(clone(n.Value))
 	if n.left != nil {

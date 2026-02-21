@@ -1,13 +1,7 @@
-// Package avl contains the definition of the AVL tree.
+// Package avl contains the definition of the [AVL] tree.
 //
-// Use New to create a new AVL.
-// The data is treated as immutable if the type implements Clonable.
-//
-// If you want to store int, use NewInt.
-//
-// If you want your AVL to store immutable data that doesn't implement Clonable, use NewImmutable.
-//
-// If you want your AVL to store mutable data even if the type implements Clonable, use NewMutable.
+// Use [New] to create a new [AVL].
+// The data is treated as immutable if the type implements [Clonable].
 package avl
 
 // CompareFunc is a function that compares two values.
@@ -20,7 +14,7 @@ type CloneFunc[T any] func(T) T
 
 func defaultCloneFunc[T any](t T) T { return t }
 
-// AVL is a standard AVL tree containing Node.
+// AVL is a standard AVL tree containing nodes.
 type AVL[T any] struct {
 	root    *Node[T]
 	compare CompareFunc[T]
@@ -28,12 +22,15 @@ type AVL[T any] struct {
 	n       uint
 }
 
-// Clonable represents a type that will be automatically cloned when used in an AVL.
+// Clonable represents a type that will be automatically cloned when used in an [AVL].
 type Clonable[T any] interface {
 	Clone() T
 }
 
 func getClone[T any](v any) CloneFunc[T] {
+	if _, ok := v.(T); !ok {
+		panic("invalid usage of getClone")
+	}
 	if _, ok := v.(Clonable[T]); !ok {
 		return defaultCloneFunc
 	}
@@ -43,29 +40,29 @@ func getClone[T any](v any) CloneFunc[T] {
 	}
 }
 
-// NewImmutable creates a new AVL storing immutable data.
+// NewImmutable creates a new [AVL] storing immutable data.
 //
 // clone is the function used to clone data to avoid side effects.
 func NewImmutable[T any](cmp CompareFunc[T], clone CloneFunc[T]) *AVL[T] {
 	return &AVL[T]{compare: cmp, clone: clone, n: 0}
 }
 
-// New creates a new AVL.
+// New creates a new [AVL].
 //
-// If T implements Clonable, the inserted data becomes immutable.
-// See NewMutable to avoid this behavior.
-// See NewImmutable to use immutable data for types that don't implements Clonable.
+// If T implements [Clonable], the inserted data becomes immutable.
+// See [NewMutable] to avoid this behavior.
+// See [NewImmutable] to use immutable data for types that don't implements Clonable.
 func New[T any](cmp CompareFunc[T]) *AVL[T] {
 	var t T
 	return NewImmutable(cmp, getClone[T](t))
 }
 
-// NewMutable creates a new AVL storing mutable data.
+// NewMutable creates a new [AVL] storing mutable data.
 func NewMutable[T any](cmp CompareFunc[T]) *AVL[T] {
 	return NewImmutable(cmp, defaultCloneFunc)
 }
 
-// newNode creates a new Node.
+// newNode creates a new [Node].
 func newNode[T any](v T) *Node[T] {
 	return &Node[T]{Value: v, heigth: 1}
 }
@@ -103,7 +100,7 @@ func (a *AVL[T]) Get(cmp func(v T) int) *T {
 	return nil
 }
 
-// Min returns the min contained in AVL.
+// Min returns the min contained in the [AVL].
 func (a *AVL[T]) Min() *T {
 	node := a.root
 	if node == nil {
@@ -116,7 +113,7 @@ func (a *AVL[T]) Min() *T {
 	return &tv
 }
 
-// Max returns the max contained in AVL.
+// Max returns the max contained in the [AVL].
 func (a *AVL[T]) Max() *T {
 	node := a.root
 	if node == nil {
@@ -129,7 +126,7 @@ func (a *AVL[T]) Max() *T {
 	return &tv
 }
 
-// Insert nodes in the AVL.
+// Insert nodes in the [AVL].
 func (a *AVL[T]) Insert(vals ...T) *AVL[T] {
 	for _, v := range vals {
 		v = a.clone(v)
@@ -143,7 +140,7 @@ func (a *AVL[T]) Insert(vals ...T) *AVL[T] {
 	return a
 }
 
-// Delete nodes in the AVL.
+// Delete nodes in the [AVL].
 func (a *AVL[T]) Delete(vals ...T) *AVL[T] {
 	for _, v := range vals {
 		if a.root != nil {
@@ -154,7 +151,7 @@ func (a *AVL[T]) Delete(vals ...T) *AVL[T] {
 	return a
 }
 
-// Sort returns the sorted array of values contained in the AVL.
+// Sort returns the sorted array of values contained in the [AVL].
 func (a *AVL[T]) Sort() []T {
 	arr := make([]T, a.n)
 	sort(a.root, arr, 0)
@@ -170,7 +167,7 @@ func sort[T any](n *Node[T], arr []T, i uint) uint {
 	return sort(n.right, arr, i+1)
 }
 
-// Clone the AVL.
+// Clone the [AVL].
 func (a *AVL[T]) Clone() *AVL[T] {
 	tree := NewImmutable(a.compare, a.clone)
 	tree.n = a.n
@@ -178,7 +175,7 @@ func (a *AVL[T]) Clone() *AVL[T] {
 	return tree
 }
 
-// Size the returns the number of nodes in the AVL.
+// Size the returns the number of nodes in the [AVL].
 func (a *AVL[T]) Size() uint {
 	return a.n
 }

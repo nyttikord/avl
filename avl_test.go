@@ -43,7 +43,7 @@ func TestAVL_Get(t *testing.T) {
 		if g == nil {
 			t.Errorf("get not found, wanted %d", i)
 		} else if *g != i {
-			t.Errorf("invalid get: got: %d, wanted %d", *g, i)
+			t.Errorf("invalid get: got %d, wanted %d", *g, i)
 		}
 	}
 
@@ -61,6 +61,13 @@ func TestAVL_Delete(t *testing.T) {
 			t.Errorf("Get found %d, wanted not", *g)
 			t.Logf("avl: %s", a)
 		}
+	}
+	a.Insert(1, 2, 3)
+	a.Delete(2)
+	st := a.Sort()
+	ln := len(st)
+	if ln != 2 || st[0] != 1 || st[1] != 3 {
+		t.Errorf("invalid value: got %v, wanted %v", st, []int{1, 3})
 	}
 }
 
@@ -154,19 +161,6 @@ func TestClonable_AutoClone(t *testing.T) {
 	for i, r := range *ng {
 		if i+1 != r {
 			t.Errorf("invalid value: got %d, wanted %d", r, i+1)
-			t.Logf("avl: %s", a)
-		}
-	}
-}
-
-func TestSimpleAVL_Has(t *testing.T) {
-	a := NewSimple[int]()
-	for i := range 10 {
-		a.Insert(i)
-	}
-	for i := range 10 {
-		if !a.Has(i) {
-			t.Errorf("avl does not have %d", i)
 			t.Logf("avl: %s", a)
 		}
 	}
