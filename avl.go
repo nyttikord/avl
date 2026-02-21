@@ -65,11 +65,6 @@ func NewMutable[T any](cmp CompareFunc[T]) *AVL[T] {
 	return NewImmutable(cmp, defaultCloneFunc)
 }
 
-// NewInt creates a new AVL storing int.
-func NewInt() *AVL[int] {
-	return New(func(a, b int) int { return a - b })
-}
-
 // newNode creates a new Node.
 func newNode[T any](v T) *Node[T] {
 	return &Node[T]{Value: v, heigth: 1}

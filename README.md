@@ -1,7 +1,7 @@
 # AVL
 
 Library implementing AVL trees in Go.
-
+                                                                                                              
 ## Usage
 
 Install the library with
@@ -11,8 +11,8 @@ go get -u github.com/nyttikord/avl@latest
 
 You can create use simple AVL tree storing int with:
 ```go
-// create a new one
-tree := avl.NewInt()
+// create a new AVL storing int using the standard cmp.Compare.
+tree := avl.NewOrdered[int]()
 
 // insert new nodes
 tree.Insert(1, 2, 3, 8, 7, 5)
@@ -108,3 +108,17 @@ var header http.Header
 // creates an AVL storing mutable data, despite its implementation of avl.Clonable[http.Header]
 tree := avl.NewMutable(header)
 ```
+
+### Helping functions
+
+You can use helping functions to avoid writing common comparison function.
+```go
+// create a new AVL using the standard cmp.Compare function.
+tree := avl.NewOrdered[int]()
+
+// Create a new AVL storing strings using the standard strings.Compare function.
+// This function is faster than avl.NewOrdered (because strings.Compare is faster than cmp.Compare).
+tree = avl.NewString()
+```
+
+`avl.NewOrderedImmutable` and `avl.NewOrderedMutable` are available.

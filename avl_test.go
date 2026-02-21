@@ -7,7 +7,7 @@ import (
 var cmpInt = func(a, b int) int { return a - b }
 
 func TestAVL_Insert(t *testing.T) {
-	a := NewInt()
+	a := NewOrdered[int]()
 	a.Insert(10)
 	if a.root.heigth != 1 {
 		t.Errorf("invalid heigth: got %d, wanted %d", a.root.heigth, 1)
@@ -23,18 +23,18 @@ func TestAVL_Insert(t *testing.T) {
 		t.Errorf("invalid heigth: got %d, wanted %d", a.root.heigth, 3)
 		t.Logf("avl: %s", a)
 	}
-	a = NewInt()
+	a = NewOrdered[int]()
 	for i := range 10 {
 		a.Insert(i)
 	}
-	a = NewInt()
+	a = NewOrdered[int]()
 	for i := range 10 {
 		a.Insert(9 - i)
 	}
 }
 
 func TestAVL_Get(t *testing.T) {
-	a := NewInt()
+	a := NewOrdered[int]()
 	for i := range 10 {
 		a.Insert(i)
 	}
@@ -50,7 +50,7 @@ func TestAVL_Get(t *testing.T) {
 }
 
 func TestAVL_Delete(t *testing.T) {
-	a := NewInt()
+	a := NewOrdered[int]()
 	for i := range 10 {
 		a.Insert(i)
 	}
@@ -65,7 +65,7 @@ func TestAVL_Delete(t *testing.T) {
 }
 
 func TestAVL_Min(t *testing.T) {
-	a := NewInt()
+	a := NewOrdered[int]()
 	for i := range 10 {
 		a.Insert(i)
 	}
@@ -83,7 +83,7 @@ func TestAVL_Min(t *testing.T) {
 }
 
 func TestAVL_Max(t *testing.T) {
-	a := NewInt()
+	a := NewOrdered[int]()
 	for i := range 10 {
 		a.Insert(i)
 	}
@@ -102,7 +102,7 @@ func TestAVL_Max(t *testing.T) {
 }
 
 func TestAVL_Sort(t *testing.T) {
-	a := NewInt()
+	a := NewOrdered[int]()
 	for i := range 10 {
 		a.Insert(i)
 	}
@@ -115,7 +115,7 @@ func TestAVL_Sort(t *testing.T) {
 }
 
 func TestAVL_Clone(t *testing.T) {
-	a := NewInt()
+	a := NewOrdered[int]()
 	for i := range 10 {
 		a.Insert(i)
 	}
