@@ -131,3 +131,44 @@ if !tree.Has(1) {
     panic("tree does not have 1")
 }
 ```
+
+### Key-value storage
+
+You can use AVL trees as maps easily with the type `KeyAVL`.
+```go
+// Create a new key-value AVL.
+// The compare function only targets keys.
+tree := avl.NewKey[int, string](cmp.Compare)
+// you can also write
+tree = avl.NewKeySimple[int, string]()
+
+// insert "hello" with the key 1
+tree.Insert(1, "hello").
+    Insert(2, "world").
+    Insert(3, "world")
+
+// print "hello world !"
+st := tree.Sort()
+println(strings.Join(st, " "))
+
+// remove the value associated with the key 2
+tree.Delete(2)
+
+// print "hello !"
+st = tree.Sort()
+println(strings.Join(st, " "))
+
+// check if a value is associated with key 2
+if !tree.Has(2) {
+    println("no world :(")
+    tree.Insert(2, "new world")
+}
+
+// get the value associated with the key 2
+got := tree.Get(2)
+if got == nil {
+    println("value not found")
+} else {
+    println(*got)
+}
+```

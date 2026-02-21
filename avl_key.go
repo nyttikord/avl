@@ -57,8 +57,8 @@ func NewKey[K, V any](cmp CompareFunc[K]) *KeyAVL[K, V] {
 }
 
 // NewKeyMutable creates a new [AVL] storing mutable data.
-func NewKeyMutable[T any](cmp CompareFunc[T]) *AVL[T] {
-	return NewImmutable(cmp, defaultCloneFunc)
+func NewKeyMutable[K, V any](cmp CompareFunc[K]) *KeyAVL[K, V] {
+	return NewKeyImmutable[K, V](cmp, defaultCloneFunc)
 }
 
 func (a *KeyAVL[K, V]) String() string {

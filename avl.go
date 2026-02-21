@@ -2,6 +2,12 @@
 //
 // Use [New] to create a new [AVL].
 // The data is treated as immutable if the type implements [Clonable].
+// See [NewImmutable], [NewMutable] and [NewSimple] family functions.
+//
+// Use [NewKey] to create a new [KeyAVL].
+// You can use this struct as a custom map.
+// The data is treated as immutable if the type implements [Clonable].
+// See [NewKeyImmutable], [NewKeyMutable] and [NewSimple] family functions.
 package avl
 
 // CompareFunc is a function that compares two values.

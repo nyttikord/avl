@@ -34,3 +34,25 @@ func NewString() *SimpleAVL[string] {
 func (a *SimpleAVL[T]) Has(s T) bool {
 	return a.Get(func(v T) int { return a.compare(v, s) }) != nil
 }
+
+// NewKeySimple returns a new [KeyAVL] ordered with the standard function [cmp.Compare].
+//
+// If V is string, use [NewKeyString] instead.
+func NewKeySimple[K cmp.Ordered, V any]() *KeyAVL[K, V] {
+	return NewKey[K, V](cmp.Compare)
+}
+
+// NewKeySimpleImmutable returns a new [KeyAVL] storing immutable data ordered with the standard function [cmp.Compare].
+func NewKeySimpleImmutable[K cmp.Ordered, V any](clone CloneFunc[V]) *KeyAVL[K, V] {
+	return NewKeyImmutable[K](cmp.Compare, clone)
+}
+
+// NewKeySimpleMutable returns a new [KeyAVL] storing mutable data ordered with the standard function [cmp.Compare].
+func NewKeySimpleMutable[K cmp.Ordered, V any]() *KeyAVL[K, V] {
+	return NewKeyMutable[K, V](cmp.Compare)
+}
+
+// NewKeyString returns a new [KeyAVL] using strings as keys ordered with the standard function [strings.Compare].
+func NewKeyString[V any]() *KeyAVL[string, V] {
+	return NewKey[string, V](strings.Compare)
+}

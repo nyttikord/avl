@@ -1,13 +1,12 @@
 package avl
 
 import (
-	"cmp"
 	"strings"
 	"testing"
 )
 
 func TestKeyAVL(t *testing.T) {
-	a := NewKey[int, string](cmp.Compare)
+	a := NewKeySimple[int, string]()
 	a.Insert(1, "hello").
 		Insert(2, "world").
 		Insert(3, "!")
