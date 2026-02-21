@@ -6,6 +6,21 @@ import (
 
 var cmpInt = func(a, b int) int { return a - b }
 
+func isAVL[T any](node *Node[T]) bool {
+	if node == nil {
+		return true
+	}
+	l := 0
+	if node.left != nil {
+		l = int(node.left.heigth)
+	}
+	r := 0
+	if node.right != nil {
+		r = int(node.right.heigth)
+	}
+	return l-r < 2 || r-l < 2
+}
+
 func TestAVL_Insert(t *testing.T) {
 	a := NewSimple[int]()
 	a.Insert(10)
@@ -23,13 +38,25 @@ func TestAVL_Insert(t *testing.T) {
 		t.Errorf("invalid heigth: got %d, wanted %d", a.root.heigth, 3)
 		t.Logf("avl: %s", a)
 	}
+	if !isAVL(a.root) {
+		t.Errorf("invalid tree: not an avl")
+		t.Logf("avl: %s", a)
+	}
 	a = NewSimple[int]()
 	for i := range 10 {
 		a.Insert(i)
+		if !isAVL(a.root) {
+			t.Errorf("invalid tree: not an avl")
+			t.Logf("avl: %s", a)
+		}
 	}
 	a = NewSimple[int]()
 	for i := range 10 {
 		a.Insert(9 - i)
+		if !isAVL(a.root) {
+			t.Errorf("invalid tree: not an avl")
+			t.Logf("avl: %s", a)
+		}
 	}
 }
 
@@ -42,8 +69,10 @@ func TestAVL_Get(t *testing.T) {
 		g := a.Get(func(v int) int { return v - i })
 		if g == nil {
 			t.Errorf("get not found, wanted %d", i)
+			t.Logf("avl: %s", a)
 		} else if *g != i {
 			t.Errorf("invalid get: got %d, wanted %d", *g, i)
+			t.Logf("avl: %s", a)
 		}
 	}
 
@@ -56,6 +85,10 @@ func TestAVL_Delete(t *testing.T) {
 	}
 	for i := range 10 {
 		a.Delete(i)
+		if !isAVL(a.root) {
+			t.Errorf("invalid tree: not an avl")
+			t.Logf("avl: %s", a)
+		}
 		g := a.Get(func(v int) int { return v - i })
 		if g != nil {
 			t.Errorf("Get found %d, wanted not", *g)
@@ -68,6 +101,7 @@ func TestAVL_Delete(t *testing.T) {
 	ln := len(st)
 	if ln != 2 || st[0] != 1 || st[1] != 3 {
 		t.Errorf("invalid value: got %v, wanted %v", st, []int{1, 3})
+		t.Logf("avl: %s", a)
 	}
 }
 

@@ -13,11 +13,11 @@ type Node[T any] struct {
 }
 
 func (n *Node[T]) String() string {
-	left := `""`
+	left := `.`
 	if n.left != nil {
 		left = n.left.String()
 	}
-	right := `""`
+	right := `.`
 	if n.right != nil {
 		right = n.right.String()
 	}
@@ -112,11 +112,12 @@ func (n *Node[T]) delete(key T, cmp CompareFunc[T]) *Node[T] {
 		} else if n.left == nil {
 			res = n.right
 		} else {
-			cur := n
-			for cur.left != nil {
-				cur = cur.left
+			cur := n.left
+			for cur.right != nil {
+				cur = cur.right
 			}
-			res = cur
+			n.Value = cur.Value
+			n.left = n.left.delete(cur.Value, cmp)
 		}
 	} else if comp < 0 {
 		if n.right == nil {

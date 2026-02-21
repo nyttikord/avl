@@ -69,7 +69,7 @@ func newNode[T any](v T) *Node[T] {
 
 func (a *AVL[T]) String() string {
 	if a.root == nil {
-		return ""
+		return "."
 	}
 	return a.root.String()
 }
@@ -145,8 +145,8 @@ func (a *AVL[T]) Delete(vals ...T) *AVL[T] {
 	for _, v := range vals {
 		if a.root != nil {
 			a.root = a.root.delete(v, a.compare)
+			a.n--
 		}
-		a.n--
 	}
 	return a
 }
